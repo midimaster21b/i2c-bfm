@@ -12,6 +12,13 @@ module i2c_master_bfm(scl, sda);
    logic     read_ack;
    logic     write_ack;
 
+   logic     sda_out;
+   logic     sda_in;
+   logic     sda_z   = 1'b0;
+
+
+   assign sda = sda_z ? sda_out : 'bz;
+   assign sda_in = sda;
 
    initial begin
       forever begin
@@ -27,7 +34,7 @@ module i2c_master_bfm(scl, sda);
 
       begin
 	 @(posedge clk);
-	 sda = 0;
+	 sda_out <= 0;
 
 	 @(negedge clk);
 	 scl = 0;
@@ -37,25 +44,25 @@ module i2c_master_bfm(scl, sda);
 
 	 for(int i=6; i>=0; i--) begin
 	    // Address on falling edge
-	    sda = addr[i];
+	    sda_out <= addr[i];
 	    @(posedge clk);
 	    scl = 1'b1;
 	    @(negedge clk);
 	    scl = 1'b0;
 	 end
 
-	 sda = rw;
+	 sda_out <= rw;
 	 @(posedge clk);
 	 scl = 1'b1;
 
 	 @(negedge clk);
 	 scl = 1'b0;
-	 sda = 1'bZ;
+	 sda_z <= 1'b1; // TODO: HIGH Z
 
 	 // Read Ack
 	 @(posedge clk);
 	 scl = 1'b1;
-	 ack = sda;
+	 ack = sda_out;
 
 	 @(negedge clk);
 	 scl = 1'b0;
@@ -71,10 +78,12 @@ module i2c_master_bfm(scl, sda);
 	 // Perform address write
 	 addr_phase(wr_addr, WRITE_C, write_ack);
 
+	 sda_z <= 1'b0;
+
 	 // Write data
 	 for(int i=7; i>0; i--) begin
 	    // Data on falling edge
-	    sda = wr_data[i];
+	    sda_out <= wr_data[i];
 	    @(posedge clk);
 	    scl = 1'b1;
 	    @(negedge clk);
@@ -82,17 +91,18 @@ module i2c_master_bfm(scl, sda);
 	 end
 
 	 // High-z for ack
-	 sda = 1'bZ;
+	 sda_z <= 1'b1; // TODO: HIGH Z
 
 	 // Read ack
 	 @(posedge clk);
 	 scl = 1'b1;
-	 write_ack = sda;
+	 write_ack = sda_in;
 
 	 // Return master line control
 	 @(negedge clk);
 	 scl = 1'b0;
-	 sda = 1'b0;
+	 sda_z   <= 1'b0;
+	 sda_out <= 1'b0;
 
 	 @(posedge clk);
 
@@ -100,7 +110,7 @@ module i2c_master_bfm(scl, sda);
 	 scl = 1'b1;
 
 	 @(negedge clk);
-	 sda = 1'b1;
+	 sda_out <= 1'b1;
       end
    endtask // m_write_data
 
@@ -115,20 +125,21 @@ module i2c_master_bfm(scl, sda);
 	 // Perform address write
 	 addr_phase(rd_addr, READ_C, read_ack);
 
-
 	 for(int x=0; x<num_bytes; x++) begin
+	    sda_z <= 1'b1; // TODO: HIGH Z
+
 	    // Write data
 	    for(int i=7; i>0; i--) begin
-	       sda = 1'bZ;
 	       @(posedge clk);
 	       scl = 1'b1;
-	       rd_data = {rd_data[6:0], sda};
+	       rd_data = {rd_data[6:0], sda_in};
 	       @(negedge clk);
 	       scl = 1'b0;
 	    end
 
 	    // Set ack value
-	    sda = ack;
+	    sda_z   <= 1'b0;
+	    sda_out <= ack;
 	    @(posedge clk);
 	    scl = 1'b1;
 
@@ -136,12 +147,12 @@ module i2c_master_bfm(scl, sda);
 	       // If last byte, retain control of lines
 	       @(negedge clk);
 	       scl = 1'b0;
-	       sda = 1'b0;
+	       sda_in <= 1'b0;
 	    end else begin
 	       // Return master line control
 	       @(negedge clk);
 	       scl = 1'b0;
-	       sda = 1'bZ;
+	       sda_z <= 1'b1; // TODO: High Z
 	    end
 	 end
 
@@ -150,13 +161,14 @@ module i2c_master_bfm(scl, sda);
 	 scl = 1'b1;
 
 	 @(negedge clk);
-	 sda = 1'b1;
+	 sda_in <= 1'b1;
       end
    endtask // m_read_data
 
    initial
      begin
-	sda = 1'b1;
+	sda_out <= 1'b1;
+	sda_z   <= 1'b0;
 	scl = 1'b1;
      end
 
