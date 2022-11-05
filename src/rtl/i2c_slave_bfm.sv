@@ -12,6 +12,20 @@ module i2c_slave_bfm(scl, sda);
    logic       rd_ack = 1'b0;
 
 
+   task m_begin_tx;
+      begin
+	 // Wait for falling edge of sda
+	 @(negedge sda);
+
+	 // Ensure sda negedge precedes scl negedge
+	 assert (scl == 1'b1);
+
+	 // Ensure sda remains low until scl negedge
+	 @(negedge scl or sda == 1'b1);
+	 assert (sda == 1'b0);
+      endtask // m_begin_tx
+
+
    task m_addr_phase;
       begin
 	 // Read 7-bit address
@@ -84,16 +98,7 @@ module i2c_slave_bfm(scl, sda);
 
 
    initial begin
-      // Wait for falling edge of sda
-      @(negedge sda);
-
-      // Ensure sda negedge precedes scl negedge
-      assert (scl == 1'b1);
-
-      // Ensure sda remains low until scl negedge
-      @(negedge scl or sda == 1'b1);
-      assert (sda == 1'b0);
-
+      this.m_begin_task();
       this.m_addr_phase();
 
       // If master write
