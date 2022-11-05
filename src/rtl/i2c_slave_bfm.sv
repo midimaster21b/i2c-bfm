@@ -23,7 +23,8 @@ module i2c_slave_bfm(scl, sda);
 	 // Ensure sda remains low until scl negedge
 	 @(negedge scl or sda == 1'b1);
 	 assert (sda == 1'b0);
-      endtask // m_begin_tx
+      end
+   endtask // m_begin_tx
 
 
    task m_addr_phase;
@@ -44,8 +45,8 @@ module i2c_slave_bfm(scl, sda);
 
 	 @(period);
 	 sda = 1'bZ;
-
-      endtask // read_addr
+      end
+   endtask // m_addr_phase
 
 
    task m_write_data;
@@ -71,7 +72,8 @@ module i2c_slave_bfm(scl, sda);
 	 @(negedge scl or posedge sda);
 	 assert(sda == 1'b1);
 	 assert(scl == 1'b1);
-      endtask // read_data
+      end
+   endtask // read_data
 
 
    task m_read_data;
@@ -94,7 +96,8 @@ module i2c_slave_bfm(scl, sda);
 	    @(period/2);
 	    // While the master doesn't take back control of the sda line
 	 end while(sda == 1'bZ); // do begin
-      endtask // read_data
+      end
+   endtask // read_data
 
 
    initial begin

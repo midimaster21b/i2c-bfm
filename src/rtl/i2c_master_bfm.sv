@@ -1,12 +1,12 @@
 module i2c_master_bfm(scl, sda);
-   output logic scl = 1'b1;
-   inout  logic sda = 1'b1;
+   output logic scl;
+   inout  logic sda;
 
    parameter clk_freq;
    time      period = 1s/clk_freq;
 
-   const logic READ_C  1'b1;
-   const logic WRITE_C 1'b0;
+   const logic READ_C  = 1'b1;
+   const logic WRITE_C = 1'b0;
 
    logic     clk = 0;
    logic     read_ack;
@@ -59,7 +59,8 @@ module i2c_master_bfm(scl, sda);
 
 	 @(negedge clk);
 	 scl = 1'b0;
-      endtask // addr_phase
+      end
+   endtask // addr_phase
 
 
    task m_write_data;
@@ -100,8 +101,8 @@ module i2c_master_bfm(scl, sda);
 
 	 @(negedge clk);
 	 sda = 1'b1;
-
-      endtask // m_write_data
+      end
+   endtask // m_write_data
 
 
    task m_read_data;
@@ -150,8 +151,14 @@ module i2c_master_bfm(scl, sda);
 
 	 @(negedge clk);
 	 sda = 1'b1;
+      end
+   endtask // m_read_data
 
-      endtask // m_read_data
+   initial
+     begin
+	sda = 1'b1;
+	scl = 1'b1;
+     end
 
 
 endmodule // i2c_master_bfm
