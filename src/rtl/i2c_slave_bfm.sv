@@ -15,7 +15,7 @@ module i2c_slave_bfm(scl, sda);
    logic     sda_in;
    logic     sda_z   = 1'b1;
 
-   assign sda = sda_z ? sda_out : 'bz;
+   assign sda = (sda_z == 1'b1) ? 'bz : sda_out;
    assign sda_in = sda;
 
    task m_begin_tx;
@@ -47,6 +47,8 @@ module i2c_slave_bfm(scl, sda);
 	    addr = {addr[5:0], sda_in};
 	 end
 
+	 $display("%t: I2C Slave - Address found '%h'", $time, addr);
+
 	 // Read RW bit
 	 @(posedge scl);
 	 rw <= sda_in;
@@ -58,6 +60,7 @@ module i2c_slave_bfm(scl, sda);
 
 	 @(period);
 	 sda_z <= 1'b1;
+
       end
    endtask // m_addr_phase
 

@@ -17,7 +17,8 @@ module i2c_master_bfm(scl, sda);
    logic     sda_z   = 1'b0;
 
 
-   assign sda = sda_z ? sda_out : 'bz;
+   // assign sda = (sda_z == 1'b1) ? sda_out : 'bz;
+   assign sda = (sda_z == 1'b1) ? 'bz : sda_out;
    assign sda_in = sda;
 
    initial begin
@@ -35,6 +36,7 @@ module i2c_master_bfm(scl, sda);
       begin
 	 $timeformat(-9, 2, " ns", 20);
 	 $display("%t: I2C Master - Address Phase - '%x'", $time, addr);
+	 sda_z <= 1'b0;
 
 	 @(posedge clk);
 	 sda_out <= 0;
@@ -46,6 +48,8 @@ module i2c_master_bfm(scl, sda);
 	 @(negedge clk);
 
 	 for(int i=6; i>=0; i--) begin
+	    // $display("%t: I2C Master - Address Phase Bit - '%b'", $time, addr[i]);
+
 	    // Address on falling edge
 	    sda_out <= addr[i];
 	    @(posedge clk);
@@ -79,7 +83,7 @@ module i2c_master_bfm(scl, sda);
 
       begin
 	 // Perform address write
-	 addr_phase(wr_addr, WRITE_C, write_ack);
+	 addr_phase(.addr(wr_addr), .rw(WRITE_C), .ack(write_ack));
 
 	 $timeformat(-9, 2, " ns", 20);
 	 $display("%t: I2C Master - Write Phase - '%x'", $time, wr_data);
@@ -128,7 +132,7 @@ module i2c_master_bfm(scl, sda);
 
       begin
 	 // Perform address write
-	 addr_phase(rd_addr, READ_C, read_ack);
+	 addr_phase(.addr(rd_addr), .rw(READ_C), .ack(read_ack));
 
 	 $timeformat(-9, 2, " ns", 20);
 	 $display("%t: I2C Master - Read Phase", $time);

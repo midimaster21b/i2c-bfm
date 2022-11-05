@@ -28,7 +28,7 @@ module i2c_tb;
 
    initial begin
       // Writes
-      dut_master.m_write_data(wr_addr, wr_data);
+      dut_master.m_write_data(.wr_addr(wr_addr), .wr_data(wr_data));
 
       // Reads
       dut_master.m_read_data(rd_addr, rd_data, num_read_bytes, ack);
