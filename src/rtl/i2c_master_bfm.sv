@@ -90,7 +90,7 @@ module i2c_master_bfm(scl, sda);
 	 sda_z <= 1'b0;
 
 	 // Write data
-	 for(int i=7; i>0; i--) begin
+	 for(int i=7; i>=0; i--) begin
 	    // Data on falling edge
 	    sda_out <= wr_data[i];
 	    @(posedge clk);

@@ -84,11 +84,11 @@ module i2c_slave_bfm(scl, sda);
 	 end
 
 	 // Active low ACK bit
-	 @(period/2);
+	 @(negedge scl);
 	 sda_z   <= 1'b0;
 	 sda_out <= 1'b0;
 
-	 @(period);
+	 @(negedge scl);
 	 sda_z   <= 1'b1;
 
 	 // Wait for posedge scl or sda
