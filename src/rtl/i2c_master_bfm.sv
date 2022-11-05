@@ -3,7 +3,7 @@ module i2c_master_bfm(scl, sda);
    inout  logic sda;
 
    parameter clk_freq;
-   time      period = 1s/clk_freq;
+   time      period = 1s/(clk_freq);
 
    const logic READ_C  = 1'b1;
    const logic WRITE_C = 1'b0;
@@ -141,7 +141,7 @@ module i2c_master_bfm(scl, sda);
 	    sda_z <= 1'b1; // TODO: HIGH Z
 
 	    // Write data
-	    for(int i=7; i>0; i--) begin
+	    for(int i=7; i>=0; i--) begin
 	       @(posedge clk);
 	       scl = 1'b1;
 	       rd_data = {rd_data[6:0], sda_in};
@@ -166,6 +166,7 @@ module i2c_master_bfm(scl, sda);
 	       scl = 1'b0;
 	       sda_z <= 1'b1; // TODO: High Z
 	    end
+	    $display("%t: I2C Master - Read Phase Found: '%h'", $time, rd_data);
 	 end
 
 	 @(posedge clk);
@@ -173,7 +174,8 @@ module i2c_master_bfm(scl, sda);
 	 scl = 1'b1;
 
 	 @(negedge clk);
-	 sda_in <= 1'b1;
+	 // sda_in <= 1'b1;
+	 sda_out <= 1'b1;
       end
    endtask // m_read_data
 

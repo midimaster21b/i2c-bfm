@@ -59,13 +59,11 @@ module i2c_slave_bfm(scl, sda);
 	 // Active low ACK bit
 	 // @(period/2);
 	 @(negedge scl);
-	 $display("%t: I2C Slave - High z enter", $time);
 	 sda_z   <= 1'b0;
 	 sda_out <= 1'b0;
 
 	 // @(period);
 	 @(negedge scl);
-	 $display("%t: I2C Slave - High z exit", $time);
 	 sda_z <= 1'b1;
 
       end
@@ -99,6 +97,8 @@ module i2c_slave_bfm(scl, sda);
 	 @(negedge scl or posedge sda_in);
 	 assert(sda_in == 1'b1);
 	 assert(scl == 1'b1);
+
+	 $display("%t: I2C Slave - Write Found '%h'", $time, rd_data);
       end
    endtask // read_data
 
@@ -116,16 +116,18 @@ module i2c_slave_bfm(scl, sda);
 	    // Read 8-bit data
 	    for(int i=7; i>=0; i--) begin
 	       sda_out <= wr_data[i];
-	       @(posedge scl);
+	       // @(posedge scl);
+	       @(negedge scl);
 	    end
 
 	    // Active low ACK bit
-	    @(period/2);
+	    // @(period/2);
 	    sda_z <= 1'b1;
 
 	    @(posedge scl);
 	    rd_ack <= sda_in;
-	    @(period/2);
+	    // @(period/2);
+	    @(negedge scl);
 	    // While the master doesn't take back control of the sda line
 	 end while(sda_in == 1'bZ); // do begin
       end
