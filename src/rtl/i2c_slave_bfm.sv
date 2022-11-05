@@ -23,8 +23,8 @@ module i2c_slave_bfm(scl, sda);
 
    task m_begin_tx;
       begin
-	 $timeformat(-9, 2, " ns", 20);
-	 $display("%t: I2C Slave - Transaction Found", $time);
+	 // $timeformat(-9, 2, " ns", 20);
+	 // $display("%t: I2C Slave - Transaction Found", $time);
 
 	 // Wait for falling edge of sda
 	 @(negedge sda_in);
@@ -42,7 +42,7 @@ module i2c_slave_bfm(scl, sda);
    task m_addr_phase;
       begin
 	 $timeformat(-9, 2, " ns", 20);
-	 $display("%t: I2C Slave - Address Phase", $time);
+	 // $display("%t: I2C Slave - Address Phase", $time);
 
 	 // Read 7-bit address
 	 for(int i=0; i<7; i++) begin
@@ -73,7 +73,7 @@ module i2c_slave_bfm(scl, sda);
    task m_write_data;
       begin
 	 $timeformat(-9, 2, " ns", 20);
-	 $display("%t: I2C Slave - Write Phase", $time);
+	 // $display("%t: I2C Slave - Write Phase", $time);
 
 	 // Read 8-bit data
 	 for(int i=0; i<8; i++) begin
@@ -109,7 +109,7 @@ module i2c_slave_bfm(scl, sda);
       begin
 	 do begin
 	    $timeformat(-9, 2, " ns", 20);
-	    $display("%t: I2C Slave - Read Phase", $time);
+	    $display("%t: I2C Slave - Read phase write data: '%h'", $time, wr_data);
 
 	    sda_z <= 1'b0;
 

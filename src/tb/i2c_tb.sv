@@ -32,8 +32,9 @@ module i2c_tb;
 
       // Reads
       dut_master.m_read_data(rd_addr, rd_data, num_read_bytes, ack);
+      assert(rd_data == 8'hab);
 
-      repeat(10) #(period)
+      repeat(10) #(period);
 
       $display("============================");
       $display("======= TEST PASSED! =======");

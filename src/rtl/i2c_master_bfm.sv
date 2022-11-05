@@ -135,7 +135,7 @@ module i2c_master_bfm(scl, sda);
 	 addr_phase(.addr(rd_addr), .rw(READ_C), .ack(read_ack));
 
 	 $timeformat(-9, 2, " ns", 20);
-	 $display("%t: I2C Master - Read Phase", $time);
+	 // $display("%t: I2C Master - Read Phase", $time);
 
 	 for(int x=0; x<num_bytes; x++) begin
 	    sda_z <= 1'b1; // TODO: HIGH Z
