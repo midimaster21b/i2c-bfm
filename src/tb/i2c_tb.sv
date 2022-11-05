@@ -28,9 +28,7 @@ module i2c_tb;
 
    initial begin
       // Writes
-      repeat(10) @(posedge clk);
       dut_master.m_write_data(wr_addr, wr_data);
-      repeat(20) @(posedge clk);
 
       // Reads
       dut_master.m_read_data(rd_addr, rd_data, num_read_bytes, ack);

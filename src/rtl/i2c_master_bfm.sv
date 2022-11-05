@@ -33,6 +33,9 @@ module i2c_master_bfm(scl, sda);
       output logic	 ack;
 
       begin
+	 $timeformat(-9, 2, " ns", 20);
+	 $display("%t: I2C Master - Address Phase - '%x'", $time, addr);
+
 	 @(posedge clk);
 	 sda_out <= 0;
 
@@ -78,6 +81,8 @@ module i2c_master_bfm(scl, sda);
 	 // Perform address write
 	 addr_phase(wr_addr, WRITE_C, write_ack);
 
+	 $timeformat(-9, 2, " ns", 20);
+	 $display("%t: I2C Master - Write Phase - '%x'", $time, wr_data);
 	 sda_z <= 1'b0;
 
 	 // Write data
@@ -124,6 +129,9 @@ module i2c_master_bfm(scl, sda);
       begin
 	 // Perform address write
 	 addr_phase(rd_addr, READ_C, read_ack);
+
+	 $timeformat(-9, 2, " ns", 20);
+	 $display("%t: I2C Master - Read Phase", $time);
 
 	 for(int x=0; x<num_bytes; x++) begin
 	    sda_z <= 1'b1; // TODO: HIGH Z
