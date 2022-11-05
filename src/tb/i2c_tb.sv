@@ -2,8 +2,8 @@ module i2c_tb;
    parameter int clk_rate = 400000;
    time		 period = 1s/clk_rate;
 
-   logic clk  = 0;
-   logic data;
+   wire		 clk;
+   wire		 data;
 
    // Read output
    logic [6:0] wr_addr = 7'h2a;
@@ -17,12 +17,12 @@ module i2c_tb;
 
 
 
-   // Clocking
-   initial begin
-      forever begin
-	 #(period/2) clk = ~clk;
-      end
-   end
+   // // Clocking
+   // initial begin
+   //    forever begin
+   //	 #(period/2) clk = ~clk;
+   //    end
+   // end
 
 
 
@@ -53,6 +53,6 @@ module i2c_tb;
 
 
    // DUTs
-   i2c_master_bfm #(.clk_freq(clk_rate)) dut_master(clk, data);
-   i2c_slave_bfm #(.clk_freq(clk_rate)) dut_slave(clk, data);
+   i2c_master_bfm #(.clk_freq(clk_rate)) dut_master(.scl(clk), .sda(data));
+   i2c_slave_bfm #(.clk_freq(clk_rate)) dut_slave(.scl(clk), .sda(data));
 endmodule // i2c_tb
