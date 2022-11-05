@@ -5,6 +5,9 @@ module i2c_slave_bfm(scl, sda);
    parameter clk_freq;
    time      period = 1s/clk_freq;
 
+   const logic READ_C  = 1'b1;
+   const logic WRITE_C = 1'b0;
+
    logic [6:0] addr;
    logic [7:0] rd_data;
    logic [7:0] wr_data = 8'h5b;
@@ -54,11 +57,15 @@ module i2c_slave_bfm(scl, sda);
 	 rw <= sda_in;
 
 	 // Active low ACK bit
-	 @(period/2);
+	 // @(period/2);
+	 @(negedge scl);
+	 $display("%t: I2C Slave - High z enter", $time);
 	 sda_z   <= 1'b0;
 	 sda_out <= 1'b0;
 
-	 @(period);
+	 // @(period);
+	 @(negedge scl);
+	 $display("%t: I2C Slave - High z exit", $time);
 	 sda_z <= 1'b1;
 
       end
@@ -135,7 +142,7 @@ module i2c_slave_bfm(scl, sda);
 	 m_addr_phase();
 
 	 // If master write
-	 if(rw == 1'b1) begin
+	 if(rw == WRITE_C) begin
 	    m_write_data();
 	 end else begin
 	    m_read_data(8'hAB);
